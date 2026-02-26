@@ -120,7 +120,7 @@ def run_single(original, impl_path, url, output, threshold):
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         impl_path = tmp.name
         tmp.close()
-        print(f"[→] Screenshotting {url} …")
+        print(f"[->] Screenshotting {url} …")
         try:
             screenshot_url(url, impl_path)
         except subprocess.CalledProcessError as e:
@@ -130,7 +130,7 @@ def run_single(original, impl_path, url, output, threshold):
     diff_out = output or str(Path(original).parent / "diff-output.png")
     result = compare_images(original, impl_path, diff_out)
 
-    symbol = "✓" if result["status"] == "PASS" else ("△" if result["status"] == "WARN" else "✗")
+    symbol = "OK" if result["status"] == "PASS" else ("WARN" if result["status"] == "WARN" else "FAIL")
     print(f"\n{symbol}  {result['match_percentage']}% match  [{result['status']}]")
     print(f"   Diff: {result['diff_percentage']}% of pixels changed")
     if result["diff_image"]:

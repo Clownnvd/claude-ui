@@ -166,7 +166,7 @@ def find_shared(manifest_path, consistency_threshold=60):
     out_path.write_text(json.dumps(component_map, indent=2), encoding="utf-8")
 
     print(f"\n[done] {recommendation}")
-    print(f"[done] Component map → {out_path}")
+    print(f"[done] Component map -> {out_path}")
     print(f"\nNext: python tools/visual_diff.py --help (after building components)")
     print(f"  Or: open {out_path} to review build order")
 

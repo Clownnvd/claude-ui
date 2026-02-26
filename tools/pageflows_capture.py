@@ -92,7 +92,7 @@ JSON.stringify(
 
 
 def discover_flows(app_name, session):
-    print(f"[→] Discovering flows for '{app_name}' on PageFlows…")
+    print(f"[->] Discovering flows for '{app_name}' on PageFlows…")
     search_url = f"https://pageflows.com/search/?q={app_name}"
     ab_open(search_url, session)
 
@@ -125,7 +125,7 @@ JSON.stringify(
 
 def extract_screens(app_name, flow_name, session, wait_ms):
     url = f"https://pageflows.com/post/desktop-web/{flow_name}/{app_name}/"
-    print(f"  [→] {url}")
+    print(f"  [->] {url}")
     ab_open(url, session, wait_ms=wait_ms)
 
     raw = ab_eval(SCREENS_JS, session)
@@ -213,8 +213,8 @@ def capture_app(app_name, flows=None, output_dir="screenshots", auth_file="pagef
     ab("close", session=session)
 
     print(f"\n[done] {manifest['total_screens']} screens captured")
-    print(f"[done] Screenshots → {app_dir}/")
-    print(f"[done] Manifest    → {manifest_path}")
+    print(f"[done] Screenshots -> {app_dir}/")
+    print(f"[done] Manifest    -> {manifest_path}")
     print(f"\nNext: python tools/find_shared_components.py --manifest {manifest_path}")
 
     return str(manifest_path)

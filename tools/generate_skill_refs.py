@@ -298,7 +298,7 @@ def generate_refs(app_name, component_map_path, manifest_path=None, output_dir=N
     skill_dir = Path(output_dir) if output_dir else Path(".claude") / "skills" / f"{app_name}-ui"
     refs_dir = skill_dir / "references"
 
-    print(f"[→] Generating skill for '{app_name}' → {skill_dir}")
+    print(f"[->] Generating skill for '{app_name}' -> {skill_dir}")
 
     # 1. SKILL.md
     skill_dir.mkdir(parents=True, exist_ok=True)
