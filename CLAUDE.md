@@ -61,6 +61,46 @@ This project recreates the Claude.ai interface. Use these tokens:
 - Use `transition-colors duration-200` for hover transitions
 - Avoid emojis as icons — use lucide-react or inline SVGs
 
+## WAT Framework (Workflows · Agent · Tools)
+
+This project uses the WAT architecture for agentic UI clone tasks.
+
+```
+workflows/   ← Markdown SOPs — what to do and how
+tools/       ← Python scripts — deterministic execution
+.tmp/        ← Intermediate files (regeneratable, gitignored)
+```
+
+### Core workflow: Clone any app UI from PageFlows
+
+```bash
+# Step 1: Capture all screens
+python tools/pageflows_capture.py --app [app-name]
+
+# Step 2: Find shared components (sidebar, topbar, etc.)
+python tools/find_shared_components.py --manifest .tmp/[app]/manifest.json
+
+# Step 3: Analyze design tokens from a key screenshot
+python tools/analyze_screen.py --image screenshots/[app]/[flow]/01-[name].png
+
+# Step 4: Visual diff after building (target ≥80% match)
+python tools/visual_diff.py --original screenshots/[app]/[flow]/01.png --url http://localhost:3000/[route]
+
+# Step 5: Package as reusable skill
+python tools/generate_skill_refs.py --app [app] --component-map .tmp/[app]/component-map.json
+```
+
+**Read workflows before starting any clone task:**
+- `workflows/01-capture-app-ui.md` — PageFlows capture
+- `workflows/02-analyze-and-build.md` — Deduplication + build order
+- `workflows/03-generate-skill.md` — Package as skill
+
+**Rules:**
+- Always run `find_shared_components.py` BEFORE building — shared components first
+- Target ≥80% visual diff match per screen
+- Update workflow files when you learn new constraints or better approaches
+- Install Python deps first: `pip install -r tools/requirements.txt`
+
 ## Skills
 
 Skills are installed at `.claude/skills/` (git submodule → https://github.com/Clownnvd/claude-code-skills).

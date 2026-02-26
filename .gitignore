@@ -43,5 +43,12 @@ next-env.d.ts
 # Auth & session files
 pageflows-auth.json
 
+# WAT framework temp files
+.tmp/
+
+# Python cache
+__pycache__/
+*.pyc
+
 # Screenshots (learning data)
 screenshots/
