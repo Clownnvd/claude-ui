@@ -117,8 +117,10 @@ export function Sidebar() {
 
         {/* Artifacts */}
         <Link
-          href="#"
-          className="w-9 h-9 flex items-center justify-center rounded-lg text-[#6B6B6B] hover:bg-black/5 transition-colors duration-200 cursor-pointer"
+          href="/artifacts"
+          className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors duration-200 cursor-pointer ${
+            pathname === "/artifacts" ? "bg-black/8 text-gray-900" : "text-[#6B6B6B] hover:bg-black/5"
+          }`}
           aria-label="Artifacts"
         >
           <ArtifactsIcon />
@@ -200,8 +202,12 @@ export function Sidebar() {
 
           {/* Artifacts */}
           <Link
-            href="#"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#6B6B6B] hover:bg-black/5 hover:text-gray-900 transition-colors duration-200 cursor-pointer"
+            href="/artifacts"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors duration-200 cursor-pointer ${
+              pathname === "/artifacts"
+                ? "bg-black/8 text-gray-900 font-medium"
+                : "text-[#6B6B6B] hover:bg-black/5 hover:text-gray-900"
+            }`}
           >
             <ArtifactsIcon />
             Artifacts
@@ -282,12 +288,31 @@ export function Sidebar() {
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </div>
+            {/* Group 1: Settings / Language / Get help */}
             <div className="border-t border-[#E0E0E0] my-1" />
             {[
               { label: "Settings", href: "/settings" },
               { label: "Language", hasArrow: true },
               { label: "Get help" },
-              { label: "Upgrade plan" },
+            ].map(({ label, href, hasArrow }) => (
+              <Link
+                key={label}
+                href={href ?? "#"}
+                onClick={() => setShowAccountMenu(false)}
+                className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+              >
+                {label}
+                {hasArrow && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-[#6B6B6B]">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                )}
+              </Link>
+            ))}
+            {/* Group 2: Upgrade plan / Learn more */}
+            <div className="border-t border-[#E0E0E0] my-1" />
+            {[
+              { label: "Upgrade plan", href: "/upgrade" },
               { label: "Learn more", hasArrow: true },
             ].map(({ label, href, hasArrow }) => (
               <Link
@@ -304,6 +329,7 @@ export function Sidebar() {
                 )}
               </Link>
             ))}
+            {/* Group 3: Log out */}
             <div className="border-t border-[#E0E0E0] my-1" />
             <button
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"

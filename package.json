@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "cross-env NODE_ENV=development next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
+    "cross-env": "^7.0.3",
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "react": "19.2.3",

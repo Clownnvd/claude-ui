@@ -136,27 +136,43 @@ export default function RecentsPage() {
         )}
       </div>
 
-      {/* Selection toolbar */}
-      {isSelecting && selected.size > 0 && (
-        <div className="px-6 py-2 border-b border-[#E0E0E0] flex items-center gap-4 max-w-2xl mx-auto w-full">
-          <span className="text-sm text-[#6B6B6B]">{selected.size} selected</span>
+      {/* Selection toolbar — shown whenever in select mode */}
+      {isSelecting && (
+        <div className="px-6 py-2 max-w-2xl mx-auto w-full flex items-center gap-3">
+          {/* Count */}
+          <div className="flex items-center gap-1.5 text-sm text-[#6B6B6B]">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5">
+              <path d="M3 8l3 3 7-7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>{selected.size} selected chat{selected.size !== 1 ? "s" : ""}</span>
+          </div>
+          {/* Spacer */}
+          <div className="flex-1" />
+          {/* Select all */}
           <button
-            onClick={() => setSelected(new Set(filtered.map((c) => c.id)))}
+            onClick={() =>
+              selected.size === filtered.length
+                ? setSelected(new Set())
+                : setSelected(new Set(filtered.map((c) => c.id)))
+            }
             className="text-sm text-[#3B82A0] hover:underline cursor-pointer"
           >
             {selected.size === filtered.length ? "Deselect all" : "Select all"}
           </button>
-          <button
-            onClick={handleDeleteSelected}
-            className="ml-auto text-sm text-red-600 hover:text-red-700 font-medium cursor-pointer"
-          >
-            Delete
-          </button>
+          {/* Cancel */}
           <button
             onClick={() => { setIsSelecting(false); setSelected(new Set()); }}
             className="text-sm text-[#6B6B6B] hover:text-gray-900 cursor-pointer"
           >
             Cancel
+          </button>
+          {/* Delete Selected button */}
+          <button
+            onClick={handleDeleteSelected}
+            disabled={selected.size === 0}
+            className="text-sm font-medium bg-[#7B1A1A] text-white px-4 py-1.5 rounded-lg hover:bg-[#6A1515] transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-default"
+          >
+            Delete Selected
           </button>
         </div>
       )}
@@ -176,23 +192,21 @@ export default function RecentsPage() {
                 className="group flex items-center gap-3 px-4 py-3.5 rounded-xl border border-[#E0E0E0] bg-white hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
                 onClick={() => !isSelecting && router.push("/new")}
               >
-                {/* Checkbox — only visible in select mode or on hover */}
-                {(isSelecting || selected.has(chat.id)) && (
-                  <div
-                    className="flex-shrink-0"
-                    onClick={(e) => { e.stopPropagation(); toggleSelect(chat.id); }}
-                  >
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors duration-150 ${
-                      selected.has(chat.id) ? "bg-gray-900 border-gray-900" : "border-gray-300 bg-white"
-                    }`}>
-                      {selected.has(chat.id) && (
-                        <svg viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth={2} className="w-3 h-3">
-                          <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
-                    </div>
+                {/* Checkbox — visible in select mode always, or on hover */}
+                <div
+                  className={`flex-shrink-0 ${isSelecting ? "flex" : "hidden group-hover:flex"}`}
+                  onClick={(e) => { e.stopPropagation(); if (!isSelecting) setIsSelecting(true); toggleSelect(chat.id); }}
+                >
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors duration-150 ${
+                    selected.has(chat.id) ? "bg-gray-900 border-gray-900" : "border-gray-300 bg-white"
+                  }`}>
+                    {selected.has(chat.id) && (
+                      <svg viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth={2} className="w-3 h-3">
+                        <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
                   </div>
-                )}
+                </div>
 
                 {/* Chat info — title + timestamp only (NO preview text) */}
                 <div className="flex-1 min-w-0">
@@ -222,15 +236,15 @@ export default function RecentsPage() {
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteConfirm(false)}>
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-base font-semibold text-gray-900 mb-2">
-              Delete {selected.size} chat{selected.size > 1 ? "s" : ""}?
+              Delete {selected.size} chat{selected.size !== 1 ? "s" : ""}?
             </h3>
             <p className="text-sm text-[#6B6B6B] mb-6">
-              This action cannot be undone.
+              Are you sure you want to permanently delete {selected.size === 1 ? "this chat" : `these ${selected.size} chats`}? This cannot be undone.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 border border-[#E0E0E0] text-sm text-gray-700 rounded-lg py-2.5 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200 cursor-pointer"
               >
                 Cancel
               </button>
@@ -240,7 +254,7 @@ export default function RecentsPage() {
                   setIsSelecting(false);
                   setSelected(new Set());
                 }}
-                className="flex-1 bg-red-600 text-white text-sm rounded-lg py-2.5 hover:bg-red-700 transition-colors duration-200 cursor-pointer"
+                className="px-4 py-2 text-sm font-medium bg-[#7B1A1A] text-white rounded-lg hover:bg-[#6A1515] transition-colors duration-200 cursor-pointer"
               >
                 Delete
               </button>

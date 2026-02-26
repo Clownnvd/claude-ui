@@ -473,7 +473,7 @@ export default function SettingsPage() {
     <div className="flex h-full">
       {/* Settings sidebar */}
       <aside className="w-48 flex-shrink-0 border-r border-[#E0E0E0] py-6 px-4">
-        <h1 className="text-base font-semibold text-gray-900 mb-4 px-2">Settings</h1>
+        <h1 className="text-2xl text-gray-900 mb-6 px-2" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>Settings</h1>
         <nav className="space-y-0.5">
           {tabs.map((tab) => (
             <button
