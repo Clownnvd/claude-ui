@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SKU — Skills Universe Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --brand: #C96A4A;
+    --brand-dim: rgba(201, 106, 74, 0.12);
+    --text: #e8e8e8;
+    --text-muted: #888;
+    --text-dim: #555;
+    --green: #4ade80;
+    --blue: #60a5fa;
+    --yellow: #fbbf24;
+    --purple: #a78bfa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 48px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    min-height: 220px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    background: var(--surface);
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(201,106,74,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 12px;
+  }
+  .cover h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .cover h1 span { color: var(--brand); }
+  .cover p {
+    color: var(--text-muted);
+    font-size: 14px;
+    max-width: 560px;
+    line-height: 1.7;
+  }
+  .cover-meta {
+    margin-top: 32px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cover-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cover-meta-item .label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+  .cover-meta-item .value { font-size: 13px; font-weight: 500; }
+
+  /* ── Sections ── */
+  section { margin-bottom: 36px; }
+  h2 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  p { color: var(--text-muted); margin-bottom: 10px; line-height: 1.7; }
+
+  /* ── WAT Diagram ── */
+  .wat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .wat-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    background: var(--surface);
+  }
+  .wat-card .letter {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--brand);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .wat-card .title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .wat-card .desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .wat-card .example {
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 8px 10px;
+    border-radius: 6px;
+  }
+
+  /* ── Skills Architecture ── */
+  .arch-diagram {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    background: var(--surface);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .arch-diagram .dir { color: var(--blue); }
+  .arch-diagram .file { color: var(--text-muted); }
+  .arch-diagram .comment { color: var(--text-dim); }
+  .arch-diagram .highlight { color: var(--green); }
+  .arch-diagram .brand { color: var(--brand); }
+
+  /* ── Skill Anatomy ── */
+  .anatomy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .anatomy-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    background: var(--surface);
+  }
+  .anatomy-card .file-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--brand);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .anatomy-card .purpose { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .anatomy-card .rules { list-style: none; padding: 0; }
+  .anatomy-card .rules li {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 2px 0;
+    padding-left: 12px;
+    position: relative;
+  }
+  .anatomy-card .rules li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--brand);
+  }
+
+  /* ── Skills Catalog ── */
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .catalog-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: var(--surface);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .catalog-item .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--brand);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .catalog-item .dot.blue { background: var(--blue); }
+  .catalog-item .dot.green { background: var(--green); }
+  .catalog-item .dot.yellow { background: var(--yellow); }
+  .catalog-item .dot.purple { background: var(--purple); }
+  .catalog-item .name { font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace; margin-bottom: 3px; }
+  .catalog-item .desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+  /* ── Lifecycle ── */
+  .lifecycle {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .lifecycle-step {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 16px 8px;
+    position: relative;
+  }
+  .lifecycle-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--brand);
+    font-size: 16px;
+  }
+  .lifecycle-step .num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--brand-dim);
+    border: 1px solid var(--brand);
+    color: var(--brand);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+  }
+  .lifecycle-step .step-title { font-size: 11px; font-weight: 600; margin-bottom: 4px; }
+  .lifecycle-step .step-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+
+  /* ── Code block ── */
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    margin: 12px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code-block .kw { color: var(--purple); }
+  .code-block .str { color: var(--green); }
+  .code-block .cmt { color: var(--text-dim); }
+  .code-block .fn { color: var(--blue); }
+  .code-block .brand { color: var(--brand); }
+
+  /* ── Rules table ── */
+  .rules-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .rules-table th {
+    background: var(--surface2);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  .rules-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  .rules-table tr:last-child td { border-bottom: none; }
+  .rules-table .mono { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--brand); }
+
+  /* ── Self-improvement loop ── */
+  .loop-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    align-items: center;
+  }
+  .loop-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    background: var(--surface);
+  }
+  .loop-item .icon { font-size: 18px; margin-bottom: 4px; }
+  .loop-item .t { font-size: 10px; font-weight: 600; margin-bottom: 2px; }
+  .loop-item .d { font-size: 9px; color: var(--text-dim); }
+  .loop-arrow {
+    text-align: center;
+    color: var(--brand);
+    font-size: 16px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer .left { font-size: 11px; color: var(--text-dim); }
+  .footer .right { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); }
+
+  /* ── Callout ── */
+  .callout {
+    border: 1px solid var(--brand);
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: var(--brand-dim);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 12px 0;
+  }
+  .callout strong { color: var(--brand); }
+
+  /* ── Per-page footer (fixed repeats on every printed page) ── */
+  .page-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--text-dim);
+    background: var(--bg);
+  }
+
+  @media print {
+    body { background: white; color: #111; padding: 0 0 32px 0; }
+    :root {
+      --bg: white; --surface: #f8f8f8; --surface2: #f0f0f0;
+      --border: #ddd; --text: #111; --text-muted: #444; --text-dim: #999;
+    }
+    .footer { display: none; }
+    .page-footer {
+      background: white;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-label">Personal Reference · Internal</div>
+  <h1>SKU <span>Skills Universe</span><br/>Architecture</h1>
+  <p>A personal reference for the WAT framework and Skills system — how it's structured, how skills are built, and how everything fits together across projects.</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="label">Framework</span>
+      <span class="value">WAT v1</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Stack</span>
+      <span class="value">Claude Code + Python</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Last updated</span>
+      <span class="value">Feb 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- 1. WAT FRAMEWORK -->
+<section>
+  <h2>01 — The WAT Framework</h2>
+  <p>WAT separates <strong>reasoning</strong> from <strong>execution</strong>. AI handles orchestration; deterministic scripts handle the actual work. This is what keeps accuracy high across multi-step tasks.</p>
+
+  <div class="wat-grid">
+    <div class="wat-card">
+      <div class="letter">W</div>
+      <div class="title">Workflows</div>
+      <div class="desc">Markdown SOPs in <code>workflows/</code>. Define objective, inputs, tools, outputs, and edge cases — written in plain language.</div>
+      <div class="example">workflows/01-capture-app-ui.md</div>
+    </div>
+    <div class="wat-card">
+      <div class="letter">A</div>
+      <div class="title">Agent</div>
+      <div class="desc">Claude Code — the decision-maker. Reads workflows, picks the right tools, handles failures, asks questions, improves the system.</div>
+      <div class="example">claude-code (this session)</div>
+    </div>
+    <div class="wat-card">
+      <div class="letter">T</div>
+      <div class="title">Tools</div>
+      <div class="desc">Python scripts in <code>tools/</code> or <code>scripts/</code>. One job each. Consistent, testable, reusable across projects.</div>
+      <div class="example">tools/pageflows_capture.py</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Why it works:</strong> If each step is 90% accurate, five chained steps = 59% success. By offloading execution to deterministic scripts, the agent stays focused on reasoning — where it excels.
+  </div>
+</section>
+
+<!-- 2. SKILLS LAYER -->
+<section>
+  <h2>02 — Skills: Portable WAT Packages</h2>
+  <p>Skills are <strong>portable WAT bundles</strong>. Instead of rebuilding tools and workflows per project, skills live in <code>~/.claude/skills/</code> and load into any session instantly.</p>
+
+  <div class="arch-diagram">
+<span class="comment"># System-wide skills (available in all projects)</span>
+<span class="dir">~/.claude/skills/</span>
+├── <span class="brand">ui-clone/</span>          <span class="comment">← WAT for cloning any app UI</span>
+├── <span class="brand">claude-ui/</span>         <span class="comment">← Claude.ai 19 flows + all components</span>
+├── <span class="brand">agent-browser/</span>     <span class="comment">← Browser automation + PageFlows tips</span>
+├── <span class="brand">ultimateuiux/</span>      <span class="comment">← 93 styles, 121 palettes, design system</span>
+├── <span class="brand">nextjs/</span>            <span class="comment">← Next.js 16 App Router patterns</span>
+├── <span class="brand">skill-creator/</span>     <span class="comment">← How to build new skills</span>
+└── <span class="comment">... 15+ more skills</span>
+
+<span class="comment"># Per-project context</span>
+<span class="dir">project/</span>
+├── <span class="highlight">CLAUDE.md</span>          <span class="comment">← Project instructions + WAT setup</span>
+├── <span class="highlight">workflows/</span>         <span class="comment">← Project-specific SOPs</span>
+├── <span class="highlight">tools/</span>             <span class="comment">← Project-specific scripts</span>
+└── <span class="highlight">.env</span>               <span class="comment">← API keys (never in skills)</span>
+  </div>
+
+  <p>The key difference: project <code>tools/</code> are local. Skills are <strong>shared across all projects</strong> and version-controlled on GitHub.</p>
+</section>
+
+<!-- 3. SKILL ANATOMY -->
+<section>
+  <h2>03 — Skill Anatomy</h2>
+  <p>Every skill follows the same structure. <code>SKILL.md</code> is the entry point — everything else is supplementary.</p>
+
+  <div class="anatomy-grid">
+    <div class="anatomy-card">
+      <div class="file-name">SKILL.md</div>
+      <div class="purpose">Main index — loaded on invoke. Must stay under 150 lines.</div>
+      <ul class="rules">
+        <li>Frontmatter: name + description (&lt;200 chars)</li>
+        <li>Quick-start commands</li>
+        <li>Critical rules (most common bugs)</li>
+        <li>Links to references/ (NOT duplicates)</li>
+      </ul>
+    </div>
+    <div class="anatomy-card">
+      <div class="file-name">references/*.md</div>
+      <div class="purpose">Deep-dive docs. Loaded on demand. Max 150 lines each.</div>
+      <ul class="rules">
+        <li>Component details, state diagrams</li>
+        <li>Page layouts (ASCII diagrams)</li>
+        <li>Design tokens table</li>
+        <li>Known bugs + fixes</li>
+      </ul>
+    </div>
+    <div class="anatomy-card">
+      <div class="file-name">scripts/*.py</div>
+      <div class="purpose">Deterministic tools — the T in WAT. One job each.</div>
+      <ul class="rules">
+        <li>Never hardcode credentials</li>
+        <li>Read from .env or args</li>
+        <li>Must be testable standalone</li>
+        <li>requirements.txt alongside</li>
+      </ul>
+    </div>
+    <div class="anatomy-card">
+      <div class="file-name">assets/ (optional)</div>
+      <div class="purpose">Templates, examples, screenshots referenced by refs.</div>
+      <ul class="rules">
+        <li>No large binary files</li>
+        <li>Screenshots: path refs only</li>
+        <li>Templates: fill-in placeholders</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4. SKILLS CATALOG -->
+<section>
+  <h2>04 — Current Skills Catalog</h2>
+
+  <div class="catalog-grid">
+    <div class="catalog-item">
+      <div class="dot brand"></div>
+      <div>
+        <div class="name">ui-clone</div>
+        <div class="desc">WAT framework for cloning any app from PageFlows. 3-phase: capture → build → package skill.</div>
+      </div>
+    </div>
+    <div class="catalog-item">
+      <div class="dot brand"></div>
+      <div>
+        <div class="name">claude-ui</div>
+        <div class="desc">Claude.ai full UI clone. 19 flows, all design tokens, every component. Next.js 16 + Tailwind v4.</div>
+      </div>
+    </div>
+    <div class="catalog-item">
+      <div class="dot blue"></div>
+      <div>
+        <div class="name">agent-browser</div>
+        <div class="desc">Browser automation CLI. Core workflow: open → snapshot → interact → re-snapshot. PageFlows tips included.</div>
+      </div>
+    </div>
+    <div class="catalog-item">
+      <div class="dot blue"></div>
+      <div>
+        <div class="name">nextjs</div>
+        <div class="desc">Next.js 16 App Router: use cache, RSC, streaming, PPR, Prisma 7, Better Auth.</div>
+      </div>
+    </div>
+    <div class="catalog-item">
+      <div class="dot purple"></div>
+      <div>
+        <div class="name">ultimateuiux</div>
+        <div class="desc">93 styles, 121 palettes, 81 font pairings, 65 WCAG criteria + Claude.ai blueprint.</div>
+      </div>
+    </div>
+    <div class="catalog-item">
+      <div class="dot purple"></div>
+      <div>
+        <div class="name">skill-creator</div>
+        <div class="desc">How to build new skills. Templates, validation, packaging workflow.</div>
+      </div>
+    </div>
+    <div class="catalog-item">
+      <div class="dot green"></div>
+      <div>
+        <div class="name">auth / api / security</div>
+        <div class="desc">Quality systems: score → fix → loop until target. OWASP-mapped, Better Auth patterns.</div>
+      </div>
+    </div>
+    <div class="catalog-item">
+      <div class="dot yellow"></div>
+      <div>
+        <div class="name">stripe / payment / email</div>
+        <div class="desc">Stripe integration, Resend + React Email, billing flows. 7 modes each.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. LIFECYCLE -->
+<section>
+  <h2>05 — Project → Skill Lifecycle</h2>
+  <p>Every successful project workflow should be packaged as a skill. This is the self-improvement loop made permanent.</p>
+
+  <div class="lifecycle">
+    <div class="lifecycle-step">
+      <div class="num">1</div>
+      <div class="step-title">New Project</div>
+      <div class="step-desc">CLAUDE.md + WAT structure initialized</div>
+    </div>
+    <div class="lifecycle-step">
+      <div class="num">2</div>
+      <div class="step-title">Run Workflows</div>
+      <div class="step-desc">Invoke relevant skills, execute tools</div>
+    </div>
+    <div class="lifecycle-step">
+      <div class="num">3</div>
+      <div class="step-title">Fix + Iterate</div>
+      <div class="step-desc">Visual diff loop, self-improvement</div>
+    </div>
+    <div class="lifecycle-step">
+      <div class="num">4</div>
+      <div class="step-title">Package Skill</div>
+      <div class="step-desc">generate_skill_refs.py → fill refs</div>
+    </div>
+    <div class="lifecycle-step">
+      <div class="num">5</div>
+      <div class="step-title">Push GitHub</div>
+      <div class="step-desc">Available in all future projects</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+<span class="cmt"># Phase 1: Bootstrap</span>
+<span class="kw">python</span> <span class="fn">scripts/pageflows_capture.py</span> <span class="str">--app notion</span>
+<span class="kw">python</span> <span class="fn">scripts/find_shared_components.py</span> <span class="str">--manifest .tmp/notion/manifest.json</span>
+
+<span class="cmt"># Phase 2: Build with visual validation</span>
+<span class="kw">python</span> <span class="fn">scripts/visual_diff.py</span> <span class="str">--original screenshots/notion/home/01.png --url http://localhost:3000</span>
+<span class="cmt"># Target: ≥80% match on every screen</span>
+
+<span class="cmt"># Phase 3: Package as skill</span>
+<span class="kw">python</span> <span class="fn">scripts/generate_skill_refs.py</span> <span class="str">--app notion --component-map .tmp/notion/component-map.json</span>
+<span class="kw">cd</span> ~/.claude/skills <span class="brand">&&</span> git add notion-ui/ <span class="brand">&&</span> git push
+  </div>
+</section>
+
+<!-- 6. QUALITY RULES -->
+<section>
+  <h2>06 — Quality Rules</h2>
+
+  <table class="rules-table">
+    <tr>
+      <th>Rule</th>
+      <th>Limit</th>
+      <th>Why</th>
+    </tr>
+    <tr>
+      <td>SKILL.md size</td>
+      <td class="mono">&lt; 150 lines</td>
+      <td>Fits in context window without truncation</td>
+    </tr>
+    <tr>
+      <td>Reference file size</td>
+      <td class="mono">&lt; 150 lines</td>
+      <td>Each file loaded on demand — keep focused</td>
+    </tr>
+    <tr>
+      <td>Description frontmatter</td>
+      <td class="mono">&lt; 200 chars</td>
+      <td>Used for skill matching and discovery</td>
+    </tr>
+    <tr>
+      <td>No duplicate info</td>
+      <td class="mono">DRY</td>
+      <td>Info in SKILL.md OR references, never both</td>
+    </tr>
+    <tr>
+      <td>Visual diff threshold</td>
+      <td class="mono">≥ 80%</td>
+      <td>Use --threshold 70 for font-heavy screens</td>
+    </tr>
+    <tr>
+      <td>Critical rules minimum</td>
+      <td class="mono">≥ 5 entries</td>
+      <td>From actual implementation failures — most valuable part</td>
+    </tr>
+    <tr>
+      <td>Scripts: no hardcoded secrets</td>
+      <td class="mono">.env only</td>
+      <td>Skills are public on GitHub</td>
+    </tr>
+  </table>
+</section>
+
+<!-- 7. SELF-IMPROVEMENT LOOP -->
+<section>
+  <h2>07 — Self-Improvement Loop</h2>
+  <p>Every bug found in a future session is an opportunity to make the skill permanently better.</p>
+
+  <div class="loop-grid">
+    <div class="loop-item">
+      <div class="icon">🔍</div>
+      <div class="t">Find Bug</div>
+      <div class="d">Visual diff fails or wrong output</div>
+    </div>
+    <div class="loop-item">
+      <div class="icon">🔧</div>
+      <div class="t">Fix It</div>
+      <div class="d">Update component or script</div>
+    </div>
+    <div class="loop-item">
+      <div class="icon">✅</div>
+      <div class="t">Verify</div>
+      <div class="d">Re-run diff, confirm ≥80%</div>
+    </div>
+    <div class="loop-item">
+      <div class="icon">📝</div>
+      <div class="t">Document</div>
+      <div class="d">Update skill ref + Critical Rules</div>
+    </div>
+    <div class="loop-item">
+      <div class="icon">🚀</div>
+      <div class="t">Push</div>
+      <div class="d">git push → available everywhere</div>
+    </div>
+  </div>
+</section>
+
+<!-- Fixed footer — repeats on every printed page -->
+<div class="page-footer">
+  <span>SKU — Skills Universe Architecture · Personal Reference</span>
+  <span>Feb 2026</span>
+</div>
+
+</body>
+</html>
